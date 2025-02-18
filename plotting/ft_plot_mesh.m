@@ -32,6 +32,7 @@ function [hs] = ft_plot_mesh(mesh, varargin)
 %   'fontunits'    =
 %   'fontname'     =
 %   'fontweight'   =
+%   'tag'          = string, the tag assigned to the plotted elements (default = '')
 %
 % If you don't want the faces, edges or vertices to be plotted, you should specify the color as 'none'.
 %
@@ -52,7 +53,7 @@ function [hs] = ft_plot_mesh(mesh, varargin)
 % FT_PLOT_DIPOLE, TRIMESH, PATCH
 
 % Copyright (C) 2009, Cristiano Micheli
-% Copyright (C) 2009-2023, Robert Oostenveld
+% Copyright (C) 2009-2024, Robert Oostenveld
 %
 % This file is part of FieldTrip, see http://www.fieldtriptoolbox.org
 % for the documentation and details.
@@ -136,7 +137,7 @@ hastet   = isfield(mesh, 'tet');   % tetraheders as a Mx4 matrix with vertex ind
 hashex   = isfield(mesh, 'hex');   % hexaheders  as a Mx8 matrix with vertex indices
 hasline  = isfield(mesh, 'line');  % lines       as a Mx2 matrix with vertex indices
 haspoly  = isfield(mesh, 'poly');  % polygons    as a MxP matrix with vertex indices
-hasinside = isfield(mesh, 'inside'); 
+hasinside = isfield(mesh, 'inside');
 
 if ~isempty(unit)
   mesh = ft_convert_units(mesh, unit);

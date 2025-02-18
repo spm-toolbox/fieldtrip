@@ -168,11 +168,11 @@ function [cfg] = ft_sourceplot(cfg, functional, anatomical)
 %                        or an Nx3 or Nx1 array where N is the number of vertices
 %   cfg.edgecolor      = [r g b] values or string, for example 'brain', 'cortex', 'skin', 'black', 'red', 'r'
 %
-% When cfg.method = 'cloud', the functional data will be rendered as as clouds (groups of points), spheres, or
-% single points at each sensor position. These spheres or point clouds can either
-% be viewed in 3D or as 2D slices. The 'anatomical' input may also consist of
-% a single or multiple triangulated surface mesh(es) in an Nx1 cell-array
-% to be plotted with the interpolated functional data (see FT_PLOT_CLOUD)
+% When cfg.method = 'cloud', the functional data will be rendered as as clouds (groups of points), 
+% spheres, or single points at each sensor position. These spheres or point clouds can either be 
+% viewed in 3D or as 2D slices. The 'anatomical' input may also consist of a single or multiple 
+% triangulated surface meshes in an Nx1 cell-array to be plotted with the interpolated functional 
+% data (see FT_PLOT_CLOUD).
 %
 % The following parameters apply to cfg.method='cloud'
 %   cfg.cloudtype       = 'point' plots a single point at each sensor position
@@ -1587,7 +1587,7 @@ yi = opt.ijk(2);
 zi = opt.ijk(3);
 qi = opt.qi;
 
-if any([xi yi zi] > functional.dim) || any([xi yi zi] < 1)
+if any([xi yi zi] > functional.dim(1:3)) || any([xi yi zi] < 1)
   % do not redraw the functional data when the user clicked outside the volume
   return;
 end
@@ -1865,7 +1865,7 @@ if opt.hasfreq && opt.hastime && opt.hasfun
   uimagesc(double(functional.time), double(functional.freq), tmpdat); axis xy;
   xlabel('time'); ylabel('freq');
   set(h4, 'tag', 'TF1');
-  caxis([opt.fcolmin opt.fcolmax]);
+  clim([opt.fcolmin opt.fcolmax]);
 elseif opt.hasfreq && opt.hasfun
   h4 = subplot(2,2,4);
   plot(functional.freq, shiftdim(opt.fun(xi,yi,zi,:),3)); xlabel('freq');
@@ -1881,7 +1881,7 @@ elseif strcmp(opt.colorbar,  'yes') && ~isfield(opt, 'hc')
     % imagesc(vectorcolorbar,1,vectorcolorbar);ft_colormap(cfg.funcolormap);
     % use a normal MATLAB colorbar, attach it to the invisible 4th subplot
     try
-      caxis([opt.fcolmin opt.fcolmax]);
+      clim([opt.fcolmin opt.fcolmax]);
     end
     
     opt.hc = colorbar;
@@ -2135,7 +2135,7 @@ if ~isempty(tag) && ~opt.init
     opt.update = [1 1 1];
   end
 end
-opt.ijk = min(opt.ijk(:)', opt.dim+0.01);
+opt.ijk = min(opt.ijk(:)', opt.dim(1:3)+0.01);
 opt.ijk = max(opt.ijk(:)', [1 1 1]-0.01);
 
 setappdata(h, 'opt', opt);

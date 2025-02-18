@@ -19,6 +19,7 @@ function hs = ft_plot_headshape(headshape, varargin)
 %   'transform'    = transformation matrix for the fiducials, converts MRI voxels into head shape coordinates
 %   'unit'         = string, convert to the specified geometrical units (default = [])
 %   'axes'         = boolean, whether to plot the axes of the 3D coordinate system (default = false)
+%   'tag'          = string, the tag assigned to the plotted elements (default = '') 
 %
 % The sensor array can include an optional fid field with fiducials, which will also be plotted.
 %   'fidcolor'     = [r g b] values or string, for example 'red', 'r', or an Nx3 or Nx1 array where N is the number of fiducials
@@ -33,7 +34,7 @@ function hs = ft_plot_headshape(headshape, varargin)
 % FT_PLOT_ORTHO, FT_PLOT_TOPO3D
 
 % Copyright (C) 2009, Cristiano Micheli
-% Copyright (C) 2009-2023, Robert Oostenveld
+% Copyright (C) 2009-2024, Robert Oostenveld
 %
 % This file is part of FieldTrip, see http://www.fieldtriptoolbox.org
 % for the documentation and details.
@@ -161,4 +162,3 @@ end
 if nargout==0
   clear hs
 end
-

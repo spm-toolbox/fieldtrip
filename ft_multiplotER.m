@@ -23,10 +23,10 @@ function [cfg] = ft_multiplotER(cfg, varargin)
 %   cfg.maskfacealpha = mask transparency value between 0 and 1
 %   cfg.xlim          = 'maxmin', 'maxabs', 'zeromax', 'minzero', or [xmin xmax] (default = 'maxmin')
 %   cfg.ylim          = 'maxmin', 'maxabs', 'zeromax', 'minzero', or [ymin ymax] (default = 'maxmin')
-%   cfg.gradscale     = number, scaling to apply to the MEG gradiometer channels prior to display
-%   cfg.magscale      = number, scaling to apply to the MEG magnetometer channels prior to display
 %   cfg.channel       = Nx1 cell-array with selection of channels (default = 'all'), see FT_CHANNELSELECTION for details
 %   cfg.refchannel    = name of reference channel for visualising connectivity, can be 'gui'
+%   cfg.magscale      = number, scaling to apply to the MEG magnetometer channels prior to display
+%   cfg.gradscale     = number, scaling to apply to the MEG gradiometer channels prior to display
 %   cfg.baseline      = 'yes', 'no' or [time1 time2] (default = 'no'), see FT_TIMELOCKBASELINE or FT_FREQBASELINE
 %   cfg.trials        = 'all' or a selection given as a 1xN vector (default = 'all')
 %   cfg.axes          = string, 'yes' or 'no' whether to draw x- and y-axes for each graph (default = 'yes')
@@ -364,8 +364,8 @@ else
 end
 tmpvar = varargin{1};
 [varargin{:}] = ft_selectdata(tmpcfg, varargin{:});
-% restore the provenance information
-[cfg, varargin{:}] = rollback_provenance(cfg, varargin{:});
+% restore the provenance information, don't keep the ft_selectdata details
+[tmpcfg, varargin{:}] = rollback_provenance(cfg, varargin{:});
 
 if isfield(tmpvar, cfg.maskparameter) && ~isfield(varargin{1}, cfg.maskparameter)
   % the mask parameter is not present after ft_selectdata, because it is
@@ -758,18 +758,23 @@ if ~isempty(range)
   % the range is not what it appears, since the figure was constructed with FT_PLOT_VECTOR
   % this critically depends on AXIS TIGHT being done earlier
   xlim_plot = get(gca, 'xlim');
-  xlim_real = varargin{1}.time([1 end]);
+  if isfield(varargin{1}, 'time')
+    xlim_real = varargin{1}.time([1 end]);
+  elseif isfield(varargin{1}, 'freq')
+    xlim_real = varargin{1}.freq([1 end]);
+  end
   % map the range that was selected in the plot onto the real range of the data
   p = polyfit(xlim_plot, xlim_real, 1);
   range([1 2]) = polyval(p, range([1 2]));
 
   cfg = removefields(cfg, 'inputfile');   % the reading has already been done and varargin contains the data
-  cfg = removefields(cfg, 'showlabels');  % this is not allowed in topoplotER
+  cfg = removefields(cfg, 'showlabels');  % this is not allowed in ft_singleplotER and ft_topoplotER
+  cfg = removefields(cfg, {'latency', 'frequency'});  % this should be xlim in ft_singleplotER and ft_topoplotER
   cfg.baseline = 'no';                    % make sure the next function does not apply a baseline correction again
   cfg.dataname = info.(ident).dataname;   % put data name in here, this cannot be resolved by other means
   cfg.channel = 'all';                    % make sure the topo displays all channels, not just the ones in this singleplot
-  cfg.comment = 'auto';
   cfg.trials = 'all';                     % trial selection has already been taken care of
+  cfg.comment = 'auto';
   cfg.xlim = range(1:2);
   % if user specified a ylim, copy it over to the zlim of topoplot
   if isfield(cfg, 'ylim')
